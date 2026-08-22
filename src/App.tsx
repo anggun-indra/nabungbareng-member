@@ -507,7 +507,7 @@ export default function App() {
         >
           {/* STICKY TOP NAV BAR (Smooth transformation: Greeting -> Compact Group Selector) */}
           <header
-            className={`sticky top-0 z-30 px-4 pb-2.5 sticky-top-header w-full flex items-center justify-between transition-all duration-300 ${
+            className={`sticky top-0 z-30 px-4 pt-5 pb-2.5 sticky-top-header w-full flex items-center justify-between transition-all duration-300 ${
               berandaScrollTop > 30
                 ? "bg-[#F8FAFC]/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs"
                 : "bg-[#F8FAFC]"
@@ -952,7 +952,7 @@ export default function App() {
           className="tab-scroll-container flex-1 pb-28 relative"
         >
           {/* STICKY HEADER */}
-          <header className="sticky top-0 z-30 bg-[#F8FAFC]/95 backdrop-blur-md border-b border-slate-200/80 px-4 pb-2.5 sticky-top-header flex items-center justify-between shadow-2xs">
+          <header className="sticky top-0 z-30 bg-[#F8FAFC]/95 backdrop-blur-md border-b border-slate-200/80 px-4 pt-5 pb-2.5 sticky-top-header flex items-center justify-between shadow-2xs">
             <div>
               <h1 className="text-[#0F172A] font-extrabold text-base leading-tight">
                 Aktivitas Tabungan
@@ -1218,7 +1218,7 @@ export default function App() {
           className="tab-scroll-container flex-1 pb-28 relative"
         >
           {/* STICKY HEADER */}
-          <header className="sticky top-0 z-30 bg-[#F8FAFC]/95 backdrop-blur-md border-b border-slate-200/80 px-4 pb-2.5 sticky-top-header flex items-center justify-between shadow-2xs">
+          <header className="sticky top-0 z-30 bg-[#F8FAFC]/95 backdrop-blur-md border-b border-slate-200/80 px-4 pt-5 pb-2.5 sticky-top-header flex items-center justify-between shadow-2xs">
             <div>
               <h1 className="text-[#0F172A] font-extrabold text-base leading-tight">
                 {laporanSubTab === "kartu" ? "Kartu Iuran" : "Transparansi Kas Kelas"}
@@ -1497,7 +1497,7 @@ export default function App() {
           className="tab-scroll-container flex-1 pb-28 relative"
         >
           {/* STICKY HEADER */}
-          <header className="sticky top-0 z-30 bg-[#F8FAFC]/95 backdrop-blur-md border-b border-slate-200/80 px-4 pb-2.5 sticky-top-header flex items-center justify-between shadow-2xs">
+          <header className="sticky top-0 z-30 bg-[#F8FAFC]/95 backdrop-blur-md border-b border-slate-200/80 px-4 pt-5 pb-2.5 sticky-top-header flex items-center justify-between shadow-2xs">
             <h1 className="text-[#0F172A] font-extrabold text-base leading-tight">
               Akun Saya
             </h1>

@@ -81,16 +81,16 @@ html, body {
   animation: progress-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Safe area insets: Add safe area on top of comfortable padding */
-.sticky-top-header {
-  padding-top: calc(env(safe-area-inset-top, 0px) + 20px) !important;
+/* Custom safe-area & utility classes for mobile browsers and PWA */
+@utility sticky-top-header {
+  padding-top: max(20px, calc(env(safe-area-inset-top, 0px) + 14px)) !important;
 }
 
-.bottom-nav {
+@utility bottom-nav {
   padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
 }
 
-.pb-safe {
+@utility pb-safe {
   padding-bottom: max(env(safe-area-inset-bottom, 0px), 24px);
 }
 
