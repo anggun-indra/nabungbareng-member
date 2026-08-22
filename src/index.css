@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-navy: #0F172A;
+  --color-teal: #0F766E;
+  --color-teal-light: #CCFBF1;
+  --color-blue: #2563EB;
+  --color-blue-light: #DBEAFE;
+  --color-amber: #D97706;
+  --color-amber-light: #FEF3C7;
+  --color-red: #DC2626;
+  --color-red-light: #FEE2E2;
+  --color-surface: #F8FAFC;
+  --color-border: #E2E8F0;
+  --radius-card: 14px;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea, select {
+  -webkit-touch-callout: default;
+  user-select: auto;
+}
+
+html, body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #0F172A;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+  height: 100dvh;
+  background-color: #FFFFFF;
+  overflow: hidden;
+}
+
+/* Tab scroll container with native momentum scrolling */
+.tab-scroll-container {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  height: 100%;
+  flex: 1;
+}
+
+/* Hide scrollbar but keep scroll */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* Progress bar animation */
+@keyframes progress-in {
+  from { width: 0; }
+}
+.progress-animate {
+  animation: progress-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Safe area insets: Add safe area on top of comfortable padding */
+.sticky-top-header {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 20px) !important;
+}
+
+.bottom-nav {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+}
+
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 24px);
+}
+
+/* Spring active press */
+.active-press {
+  transition: transform 0.15s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.active-press:active {
+  transform: scale(0.96);
+}

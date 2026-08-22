@@ -1,0 +1,12 @@
+{
+  "title": "NabungBareng — Tabungan Multi-Group",
+  "description": "Aplikasi transparansi dan pengelolaan tabungan kelas serta multi-group untuk anggota dan bendahara.",
+  "language": "id",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
