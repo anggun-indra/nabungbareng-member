@@ -83,7 +83,7 @@ html, body {
 
 /* Custom safe-area & utility classes for mobile browsers and PWA */
 @utility sticky-top-header {
-  padding-top: max(20px, calc(env(safe-area-inset-top, 0px) + 14px)) !important;
+  padding-top: max(24px, calc(env(safe-area-inset-top, 0px) + 16px)) !important;
 }
 
 @utility bottom-nav {

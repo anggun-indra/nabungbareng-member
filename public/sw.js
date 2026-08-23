@@ -1,4 +1,4 @@
-const CACHE_NAME = "nabungbareng-v1.0.14"
+const CACHE_NAME = "nabungbareng-v1.0.22"
 const PRECACHE_ASSETS = [
   "/",
   "/index.html",
