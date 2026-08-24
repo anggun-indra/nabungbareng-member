@@ -95,7 +95,8 @@ export async function fetchUserGroups(): Promise<GroupInfo[]> {
     const groupList: GroupInfo[] = []
 
     for (const row of memberRows) {
-      const g = row.groups as unknown as {
+      const gRaw = row.groups;
+      const g = (Array.isArray(gRaw) ? gRaw[0] : gRaw) as unknown as {
         id: string
         name: string
         school_name: string | null

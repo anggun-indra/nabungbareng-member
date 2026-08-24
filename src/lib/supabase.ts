@@ -34,5 +34,15 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
  * Helper to get current Supabase User ID (mapped from Firebase UID)
  */
 export function getCurrentUserId(): string | null {
-  return auth.currentUser?.uid || null
+  if (auth.currentUser?.uid) return auth.currentUser.uid;
+  try {
+    const saved = localStorage.getItem("nabungbareng_auth_user");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed.id || null;
+    }
+  } catch {
+    // Ignore JSON parse errors
+  }
+  return null;
 }
