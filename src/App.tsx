@@ -190,12 +190,13 @@ export default function App() {
   }
 
   // Load groups & transactions from Supabase
-  const loadRemoteData = async (preferredGroupId?: string) => {
+  const loadRemoteData = async (preferredGroupId?: string, targetUserId?: string) => {
     try {
       if (typeof auth.authStateReady === "function") {
         await auth.authStateReady()
       }
-      const remoteGroups = await fetchUserGroups()
+      const uId = targetUserId || auth.currentUser?.uid || currentUser?.id
+      const remoteGroups = await fetchUserGroups(uId)
       setGroups(remoteGroups)
 
       if (remoteGroups.length > 0) {
@@ -242,7 +243,7 @@ export default function App() {
         setCurrentUser(userObj)
         localStorage.setItem("nabungbareng_auth_user", JSON.stringify(userObj))
         syncUserProfile(fbUser).catch(() => {})
-        await loadRemoteData()
+        await loadRemoteData(undefined, fbUser.uid)
       } else {
         const saved = localStorage.getItem("nabungbareng_auth_user")
         if (!saved) {
@@ -258,8 +259,8 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    if (currentUser) {
-      loadRemoteData()
+    if (currentUser?.id) {
+      loadRemoteData(undefined, currentUser.id)
     }
   }, [currentUser?.id])
 

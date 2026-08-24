@@ -55,62 +55,82 @@ export async function syncUserProfile(user: {
 /**
  * Fetch all groups that the current user belongs to
  */
-export async function fetchUserGroups(): Promise<GroupInfo[]> {
+export async function fetchUserGroups(targetUserId?: string): Promise<GroupInfo[]> {
   try {
-    const currentUserId = getCurrentUserId()
-    let query = supabase
+    const currentUserId = targetUserId || getCurrentUserId()
+
+    // 1. Fetch group members
+    let membersQuery = supabase
       .from("group_members")
-      .select(`
-        id,
-        group_id,
-        role,
-        display_name,
-        student_name,
-        active,
-        created_at,
-        groups:group_id (
-          id,
-          name,
-          school_name,
-          monthly_target_idr,
-          start_month,
-          logo_url,
-          status,
-          public_report_enabled,
-          public_slug
-        )
-      `)
+      .select("id, group_id, user_id, role, display_name, student_name, active, created_at")
       .eq("active", true)
 
     if (currentUserId) {
-      query = query.eq("user_id", currentUserId)
+      membersQuery = membersQuery.eq("user_id", currentUserId)
     }
 
-    const { data: memberRows, error: memberErr } = await query
+    const { data: memberRows, error: memberErr } = await membersQuery
 
-    if (memberErr || !memberRows || memberRows.length === 0) {
+    if (memberErr) {
+      console.error("fetchUserGroups memberErr:", memberErr)
       return []
+    }
+
+    if (!memberRows || memberRows.length === 0) {
+      return []
+    }
+
+    const groupIds = Array.from(new Set(memberRows.map((m: any) => m.group_id).filter(Boolean)))
+    const memberIds = memberRows.map((m: any) => m.id)
+
+    if (groupIds.length === 0) {
+      return []
+    }
+
+    // 2. Fetch groups
+    const { data: groupsData, error: groupsErr } = await supabase
+      .from("groups")
+      .select("id, name, school_name, monthly_target_idr, start_month, logo_url, status, public_report_enabled, public_slug")
+      .in("id", groupIds)
+      .eq("status", "active")
+
+    if (groupsErr) {
+      console.error("fetchUserGroups groupsErr:", groupsErr)
+    }
+
+    const groupsMap = new Map<string, any>()
+    if (groupsData) {
+      groupsData.forEach((g: any) => groupsMap.set(g.id, g))
+    }
+
+    // 3. Fetch member balances
+    const { data: balancesData } = await supabase
+      .from("member_balances")
+      .select("group_member_id, balance_idr")
+      .in("group_member_id", memberIds)
+
+    const balancesMap = new Map<string, number>()
+    if (balancesData) {
+      balancesData.forEach((b: any) => balancesMap.set(b.group_member_id, Number(b.balance_idr)))
+    }
+
+    // 4. Fetch total cash balances
+    const { data: cashData } = await supabase
+      .from("group_cash_balances")
+      .select("group_id, balance_idr")
+      .in("group_id", groupIds)
+
+    const cashMap = new Map<string, number>()
+    if (cashData) {
+      cashData.forEach((c: any) => cashMap.set(c.group_id, Number(c.balance_idr)))
     }
 
     const groupList: GroupInfo[] = []
 
     for (const row of memberRows) {
-      const gRaw = row.groups;
-      const g = (Array.isArray(gRaw) ? gRaw[0] : gRaw) as unknown as {
-        id: string
-        name: string
-        school_name: string | null
-        monthly_target_idr: number
-        start_month?: string | null
-        logo_url?: string | null
-        public_report_enabled?: boolean
-        public_slug?: string | null
-      } | null
-
+      const g = groupsMap.get(row.group_id)
       if (!g) continue
 
-      // Calculate effective start month for this member
-      // (max of group start_month and member join date month)
       let effectiveStartMonth = g.start_month || undefined
       if (row.created_at) {
         try {
@@ -126,20 +146,8 @@ export async function fetchUserGroups(): Promise<GroupInfo[]> {
         }
       }
 
-      // Fetch user's individual balance in this group
-      const { data: balData } = await supabase
-        .from("member_balances")
-        .select("balance_idr")
-        .eq("group_id", g.id)
-        .eq("group_member_id", row.id)
-        .maybeSingle()
-
-      // Fetch total cash balance of this group
-      const { data: cashData } = await supabase
-        .from("group_cash_balances")
-        .select("balance_idr")
-        .eq("group_id", g.id)
-        .maybeSingle()
+      const bal = balancesMap.get(row.id) ?? 0
+      const cash = cashMap.get(g.id) ?? 0
 
       groupList.push({
         id: g.id,
@@ -147,8 +155,8 @@ export async function fetchUserGroups(): Promise<GroupInfo[]> {
         sekolah: g.school_name || "Sekolah Dasar",
         role: row.role as "member" | "treasurer" | "group_admin",
         targetBulanan: Number(g.monthly_target_idr) || 25000,
-        saldoSaya: Number(balData?.balance_idr) || 0,
-        kasTotal: Number(cashData?.balance_idr) || 0,
+        saldoSaya: bal,
+        kasTotal: cash,
         siswaNama: row.student_name || row.display_name,
         siswaKelas: g.name,
         startMonth: g.start_month || undefined,
@@ -162,7 +170,7 @@ export async function fetchUserGroups(): Promise<GroupInfo[]> {
 
     return groupList
   } catch (err) {
-    console.warn("Error fetching user groups:", err)
+    console.error("Error fetching user groups:", err)
     return []
   }
 }
