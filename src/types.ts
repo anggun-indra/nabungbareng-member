@@ -49,6 +49,7 @@ export interface TransactionItem {
 
 export interface GroupInfo {
   id: string
+  memberId: string
   nama: string
   sekolah: string
   role: "member" | "treasurer" | "group_admin"

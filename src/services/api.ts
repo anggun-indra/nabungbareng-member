@@ -151,6 +151,7 @@ export async function fetchUserGroups(targetUserId?: string): Promise<GroupInfo[
 
       groupList.push({
         id: g.id,
+        memberId: row.id,
         nama: g.name,
         sekolah: g.school_name || "Sekolah Dasar",
         role: row.role as "member" | "treasurer" | "group_admin",
@@ -238,11 +239,17 @@ export async function fetchGroupTransactions(
   try {
     const transactions: TransactionItem[] = []
 
-    // 1. Fetch Payment Submissions
-    const { data: submissions, error: subErr } = await supabase
+    // 1. Fetch Payment Submissions for this member only (or group if none provided)
+    let subQuery = supabase
       .from("payment_submissions")
       .select("*")
       .eq("group_id", groupId)
+
+    if (userMemberId) {
+      subQuery = subQuery.eq("group_member_id", userMemberId)
+    }
+
+    const { data: submissions, error: subErr } = await subQuery
       .order("created_at", { ascending: false })
 
     if (submissions && !subErr) {
@@ -325,7 +332,7 @@ export async function fetchGroupTransactions(
     }
 
     // 2. Fetch Posted Expenses & Allocations
-    const { data: allocations, error: allocErr } = await supabase
+    let allocQuery = supabase
       .from("expense_allocations")
       .select(`
         id,
@@ -342,6 +349,12 @@ export async function fetchGroupTransactions(
         )
       `)
       .eq("group_id", groupId)
+
+    if (userMemberId) {
+      allocQuery = allocQuery.eq("group_member_id", userMemberId)
+    }
+
+    const { data: allocations, error: allocErr } = await allocQuery
       .order("created_at", { ascending: false })
 
     if (allocations && !allocErr) {

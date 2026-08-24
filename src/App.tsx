@@ -208,7 +208,12 @@ export default function App() {
 
         setActiveGroupId(nextActiveId)
 
-        const remoteTxs = await fetchGroupTransactions(nextActiveId)
+        const activeGroupItem =
+          remoteGroups.find((g) => g.id === nextActiveId) || remoteGroups[0]
+        const remoteTxs = await fetchGroupTransactions(
+          nextActiveId,
+          activeGroupItem?.memberId,
+        )
         setTransactions(remoteTxs)
       } else {
         setActiveGroupId("")
@@ -266,8 +271,9 @@ export default function App() {
 
   useEffect(() => {
     if (currentUser && activeGroupId) {
+      const activeGroupItem = groups.find((g) => g.id === activeGroupId)
       setIsTransactionsLoading(true)
-      fetchGroupTransactions(activeGroupId)
+      fetchGroupTransactions(activeGroupId, activeGroupItem?.memberId)
         .then((txs) => {
           setTransactions(txs)
         })
@@ -275,7 +281,7 @@ export default function App() {
           setIsTransactionsLoading(false)
         })
     }
-  }, [activeGroupId])
+  }, [activeGroupId, groups])
 
   useEffect(() => {
     const handleOnline = () => setIsOffline(false)
