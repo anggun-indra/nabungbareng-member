@@ -57,7 +57,8 @@ export async function syncUserProfile(user: {
  */
 export async function fetchUserGroups(): Promise<GroupInfo[]> {
   try {
-    const { data: memberRows, error: memberErr } = await supabase
+    const currentUserId = getCurrentUserId()
+    let query = supabase
       .from("group_members")
       .select(`
         id,
@@ -80,6 +81,12 @@ export async function fetchUserGroups(): Promise<GroupInfo[]> {
         )
       `)
       .eq("active", true)
+
+    if (currentUserId) {
+      query = query.eq("user_id", currentUserId)
+    }
+
+    const { data: memberRows, error: memberErr } = await query
 
     if (memberErr || !memberRows || memberRows.length === 0) {
       return []
